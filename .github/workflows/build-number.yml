@@ -27,7 +27,7 @@ jobs:
           fi
           echo "BUILD_NUMBER=$BUILD_NUMBER" | tee -a $GITHUB_ENV
         env:
-          OFFSET: ${{ github.event.inputs.build_number_offset }}
+          OFFSET: ${{ github.event.inputs.build_number_offset || 123 }}
           BUILD_NUMBER: ${{ github.event.inputs.build_number }}
 
       - name: Build app
@@ -46,7 +46,7 @@ jobs:
           fi
           echo "BUILD_NUMBER=$BUILD_NUMBER" | tee -a $GITHUB_ENV
         env:
-          OFFSET: ${{ github.event.inputs.build_number_offset }}
+          OFFSET: ${{ github.event.inputs.build_number_offset || 123 }}
           BUILD_NUMBER: ${{ github.event.inputs.build_number }}
 
       - name: Build app
