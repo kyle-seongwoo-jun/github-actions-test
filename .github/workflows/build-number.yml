@@ -3,11 +3,11 @@ on:
   workflow_dispatch:
     inputs:
       build_number:
-        description: 'Build number manually set'
+        description: 'Build number (if empty, automatically generated)'
         required: false
         type: number
       build_number_offset:
-        description: 'Build number offset'
+        description: 'Build number offset (used if build number is not set)'
         required: true
         default: 123
         type: number
@@ -18,20 +18,17 @@ jobs:
   release-a:
     name: Build and release app
     runs-on: ubuntu-latest
+    if : github.event.inputs.build_number == ''
     steps:
-      - name: Calculate build number
+      - name: Generate build number
         run: |
-          if [[ -z $BUILD_NUMBER ]]; then
-            echo "build number is not set."
-            BUILD_NUMBER=$(( $GITHUB_RUN_NUMBER + $OFFSET ))
-          fi
-          echo "BUILD_NUMBER=$BUILD_NUMBER" | tee -a $GITHUB_ENV
+          GENERATED_BUILD_NUMBER=$(( $GITHUB_RUN_NUMBER + $OFFSET ))
+          echo "GENERATED_BUILD_NUMBER=$GENERATED_BUILD_NUMBER" | tee -a $GITHUB_ENV
         env:
           OFFSET: ${{ github.event.inputs.build_number_offset || 123 }}
-          BUILD_NUMBER: ${{ github.event.inputs.build_number }}
 
       - name: Build app
-        run: echo "BUILD_NUMBER=$BUILD_NUMBER"
+        run: echo "BUILD_NUMBER=${{ github.event.inputs.build_number || env.GENERATED_BUILD_NUMBER }}"
 
   release-b:
     name: Build and release app 2
